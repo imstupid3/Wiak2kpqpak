@@ -334,5 +334,4 @@ function UILibrary:CreateTextBox(parent, text, callback)
     return textbox
 end
 
-    return UILibrary
-end
+return UILibrary
