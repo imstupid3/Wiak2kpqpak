@@ -1,0 +1,338 @@
+-- Custom UI Library with Tabs
+local UILibrary = {}
+
+-- Create Main UI Window with Tabs
+function UILibrary:CreateWindow(title)
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "CustomUILibrary"
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    local main = Instance.new("Frame")
+	main.Size = UDim2.new(0, 250, 0, 300)
+	main.Position = UDim2.new(0.1, 0, 0.1, 0)
+	main.BackgroundColor3 = Color3.fromRGB(46, 46, 47)
+	main.BorderColor3 = Color3.new(0, 0, 0)
+	main.BorderSizePixel = 0
+	main.Active = true
+	main.BackgroundTransparency = 0 
+	main.Draggable = true
+	main.Parent = screenGui
+	
+	local uic = Instance.new("UICorner")
+	uic.CornerRadius = UDim.new(0, 2)
+	uic.Parent = main
+	
+	local uis = Instance.new("UIStroke")
+	uis.Color = Color3.fromRGB(170, 50, 50)
+	uis.Thickness = 1
+	uis.Parent = main
+	
+	local top = Instance.new("Frame")
+	top.Size = UDim2.new(1, 0, 0, 22)
+	top.Position = UDim2.new(0, 0, 0, 0)
+	top.BackgroundColor3 = Color3.fromRGB(46, 46, 47)
+	top.BorderColor3 = Color3.new(0, 0, 0)
+	top.BorderSizePixel = 0
+	top.Active = true
+	top.BackgroundTransparency = 1
+	top.Parent = main
+	
+	local uis2 = Instance.new("UIStroke")
+	uis2.Color = Color3.fromRGB(170, 50, 50)
+	uis2.Thickness = 1
+	uis2.Parent = top
+	
+	local name = Instance.new("TextLabel")
+	name.Size = UDim2.new(1, 0, 1, 0)
+	name.Position = UDim2.new(0, 0, 0, 0)
+	name.BackgroundColor3 = Color3.new(0, 0, 0)
+	name.BorderColor3 = Color3.new(0, 0, 0)
+	name.BorderSizePixel = 0
+	name.Text = "Text"
+	name.BackgroundTransparency = 1
+	name.TextColor3 = Color3.new(255, 255, 255)
+	name.Font = Enum.Font.GothamBold
+	name.Parent = top
+	name.TextSize = 12
+	
+-- tab main
+local tabholder = Instance.new("ScrollingFrame")
+tabholder.Size = UDim2.new(1, 0, 0, 20)
+tabholder.Position = UDim2.new(0, 0, 0, 22)
+tabholder.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+tabholder.BorderColor3 = Color3.new(0, 0, 0)
+tabholder.BorderSizePixel = 0
+tabholder.Active = true
+tabholder.ScrollBarThickness = 5 -- Adjust thickness for visibility
+tabholder.ScrollingEnabled = false
+tabholder.ScrollingDirection = Enum.ScrollingDirection.X
+tabholder.CanvasSize = UDim2.new(0, 0, 0, 20) -- Initialize canvas size
+tabholder.BackgroundTransparency = 0 
+tabholder.Parent = main
+
+local uist = Instance.new("UIStroke")
+uist.Color = Color3.fromRGB(170, 50, 50)
+uist.Thickness = 1.2
+uist.ApplyStrokeMode = Enum.ApplyStrokeMode.Border 
+uist.Parent = tabholder
+
+local TabLayout = Instance.new("UIListLayout")
+TabLayout.Parent = tabholder
+TabLayout.FillDirection = Enum.FillDirection.Horizontal
+TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+local Tabs = {}
+local tabCount = 0 -- Keep track of number of tabs
+
+function UILibrary:CreateTab(tabName)
+    local tabButton = Instance.new("TextButton")
+    tabButton.Size = UDim2.new(0, 80, 0, 20)
+    tabButton.Position = UDim2.new(0, 0, 0, 0)
+    tabButton.BackgroundColor3 = Color3.new(0, 0, 0)
+    tabButton.BorderColor3 = Color3.new(0, 0, 0)
+    tabButton.BorderSizePixel = 0
+    tabButton.Text = tabName
+    tabButton.BackgroundTransparency = 1
+    tabButton.TextColor3 = Color3.new(1, 1, 1) -- Use normalized values for RGB
+    tabButton.Font = Enum.Font.Gotham
+    tabButton.Parent = tabholder
+    tabButton.TextSize = 14
+
+    local uis2 = Instance.new("UIStroke")
+    uis2.Color = Color3.fromRGB(36, 36, 36)
+    uis2.Thickness = 1.2
+    uis2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border 
+    uis2.Parent = tabButton
+
+    local elemhold = Instance.new("Frame")
+    elemhold.Size = UDim2.new(0, 242, 0, 248)
+    elemhold.Position = UDim2.new(0, 4, 0, 48)
+    elemhold.BackgroundColor3 = Color3.new(1, 1, 1)
+    elemhold.BorderColor3 = Color3.new(0, 0, 0)
+    elemhold.BorderSizePixel = 0
+    elemhold.Active = false
+    elemhold.BackgroundTransparency = 1
+    elemhold.Parent = main
+
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    listLayout.Padding = UDim.new(0, 6) -- Adjust padding between elements
+    listLayout.Parent = elemhold
+
+    tabButton.MouseButton1Click:Connect(function()
+        for _, tab in pairs(Tabs) do
+            tab.Visible = false
+        end
+        elemhold.Visible = true
+    end)
+
+    elemhold.Visible = (#Tabs == 0)
+    table.insert(Tabs, elemhold)
+    tabCount = tabCount + 1
+
+    -- Update the CanvasSize of the tabholder to accommodate new tabs
+    tabholder.CanvasSize = UDim2.new(0, tabCount * 80, 0, 20) -- Update canvas size dynamically
+
+    -- Check if the tabholder needs to be scrollable
+    tabholder.ScrollingEnabled = tabholder.CanvasSize.X.Offset > tabholder.Size.X.Offset
+
+    return elemhold
+end
+
+    function UILibrary:CreateButton(parent, buttonText, callback)
+    local buttonholder = Instance.new("Frame")
+	buttonholder.Size = UDim2.new(1, 0, 0, 20)
+	buttonholder.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	buttonholder.BorderColor3 = Color3.new(0, 0, 0)
+	buttonholder.BorderSizePixel = 0
+	buttonholder.Active = true
+	buttonholder.BackgroundTransparency = 0
+	buttonholder.Parent = parent
+	
+	local uis3 = Instance.new("UIStroke")
+	uis3.Color = Color3.fromRGB(170, 50, 50)
+	uis3.Thickness = 0.6
+	uis3.ApplyStrokeMode = Enum.ApplyStrokeMode.Border 
+	uis3.Parent = buttonholder
+	
+	uic:Clone().Parent = buttonholder
+	
+	local buttontitle = Instance.new("TextLabel")
+	buttontitle.Size = UDim2.new(1, -2, 1, -2)
+	buttontitle.Position = UDim2.new(0, 1, 0, 1)
+	buttontitle.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
+	buttontitle.BorderColor3 = Color3.new(0, 0, 0)
+	buttontitle.BorderSizePixel = 0
+	buttontitle.Text = buttonText or "Button"
+	buttontitle.BackgroundTransparency = 0
+	buttontitle.TextColor3 = Color3.new(255, 255, 255)
+	buttontitle.Font = Enum.Font.Gotham
+	buttontitle.Parent = buttonholder
+	buttontitle.TextXAlignment = Enum.TextXAlignment.Left
+	buttontitle.TextSize = 13
+	
+	local uiPadding = Instance.new("UIPadding")
+	uiPadding.PaddingBottom = UDim.new(0, 8)
+	uiPadding.PaddingTop = UDim.new(0, 8)
+	uiPadding.PaddingLeft = UDim.new(0, 8)
+	uiPadding.PaddingRight = UDim.new(0, 8)
+	uiPadding.Parent = buttontitle
+	
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, 0, 1, 0)
+	button.Position = UDim2.new(0, 0, 0, 0)
+	button.BackgroundColor3 = Color3.new(0, 0, 0)
+	button.BorderColor3 = Color3.new(0, 0, 0)
+	button.BorderSizePixel = 0
+	button.Text = ""
+	button.BackgroundTransparency = 1
+	button.TextColor3 = Color3.new(255, 255, 255)
+	button.Font = Enum.Font.Arial
+	button.Parent = buttonholder	
+
+        button.MouseButton1Click:Connect(function()
+            if callback then callback() end
+        end)
+        return button
+    end
+
+ function UILibrary:CreateToggle(parent, toggleText, callback)
+    local state = false
+
+    local toggleholder = Instance.new("Frame")
+    toggleholder.Size = UDim2.new(1, 0, 0, 26)
+    toggleholder.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    toggleholder.BorderColor3 = Color3.new(0, 0, 0)
+    toggleholder.BorderSizePixel = 0
+    toggleholder.Active = true
+    toggleholder.BackgroundTransparency = 0 
+    toggleholder.Parent = parent  -- Use parent here
+    uic:Clone().Parent = toggleholder
+
+    local uis3 = Instance.new("UIStroke")
+    uis3.Color = Color3.fromRGB(170, 50, 50)
+    uis3.Thickness = 0.6
+    uis3.ApplyStrokeMode = Enum.ApplyStrokeMode.Border 
+    uis3.Parent = toggleholder
+    
+    local toggletitle = Instance.new("TextLabel")
+    toggletitle.Size = UDim2.new(1, -2, 1, -2)
+    toggletitle.Position = UDim2.new(0, 1, 0, 1)
+    toggletitle.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
+    toggletitle.BorderColor3 = Color3.new(0, 0, 0)
+    toggletitle.BorderSizePixel = 0
+    toggletitle.Text = toggleText or "Toggle"
+    toggletitle.BackgroundTransparency = 0 
+    toggletitle.TextColor3 = Color3.new(255, 255, 255)
+    toggletitle.Font = Enum.Font.Gotham
+    toggletitle.Parent = toggleholder
+    toggletitle.TextXAlignment = Enum.TextXAlignment.Left
+    toggletitle.TextSize = 13
+    
+    local uiPadding = Instance.new("UIPadding")
+    uiPadding.PaddingBottom = UDim.new(0, 8)
+    uiPadding.PaddingTop = UDim.new(0, 8)
+    uiPadding.PaddingLeft = UDim.new(0, 8)
+    uiPadding.PaddingRight = UDim.new(0, 8)
+    uiPadding.Parent = toggletitle
+    
+    local toggle = Instance.new("TextButton")
+    toggle.Size = UDim2.new(0, 20, 0, 16)
+    toggle.Position = UDim2.new(1, -25, 0, 5)
+    toggle.BackgroundColor3 = Color3.new(1, 1, 1)
+    toggle.BorderColor3 = Color3.new(0, 0, 0)
+    toggle.BorderSizePixel = 1
+    toggle.Text = ""
+    toggle.BackgroundTransparency = 0 
+    toggle.TextColor3 = Color3.new(255, 255, 255)
+    toggle.Parent = toggleholder
+    uic:Clone().Parent = toggle
+    
+    toggle.MouseButton1Click:Connect(function()
+        state = not state
+        toggle.BackgroundColor3 = state and Color3.fromRGB(144, 238, 144) or Color3.new(1, 1, 1)
+        if callback then callback(state) end
+    end)
+    return toggle
+end 
+
+function UILibrary:CreateTextBox(parent, text, callback)
+	local textboxholder = Instance.new("Frame")
+	textboxholder.Size = UDim2.new(1, 0, 0, 26)
+	textboxholder.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+	textboxholder.BorderColor3 = Color3.new(0, 0, 0)
+	textboxholder.BorderSizePixel = 0
+	textboxholder.Active = true
+	textboxholder.BackgroundTransparency = 0 
+	textboxholder.Parent = parent  -- Use parent here
+	
+	local uis3 = Instance.new("UIStroke")
+	uis3.Color = Color3.fromRGB(170, 50, 50)
+	uis3.Thickness = 0.6
+	uis3.ApplyStrokeMode = Enum.ApplyStrokeMode.Border 
+	uis3.Parent = textboxholder
+	
+	local textboxtitle = Instance.new("TextLabel")
+	textboxtitle.Size = UDim2.new(1, -2, 1, -2)
+	textboxtitle.Position = UDim2.new(0, 1, 0, 1)
+	textboxtitle.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
+	textboxtitle.BorderColor3 = Color3.new(0, 0, 0)
+	textboxtitle.BorderSizePixel = 0
+	textboxtitle.Text = text
+	textboxtitle.BackgroundTransparency = 0
+	textboxtitle.TextColor3 = Color3.new(255, 255, 255)
+	textboxtitle.Font = Enum.Font.Gotham
+	textboxtitle.Parent = textboxholder
+	textboxtitle.TextXAlignment = Enum.TextXAlignment.Left
+	textboxtitle.TextSize = 13
+	
+	local uiPadding = Instance.new("UIPadding")
+    uiPadding.PaddingBottom = UDim.new(0, 8)
+    uiPadding.PaddingTop = UDim.new(0, 8)
+    uiPadding.PaddingLeft = UDim.new(0, 8)
+    uiPadding.PaddingRight = UDim.new(0, 8)
+    uiPadding.Parent = textboxtitle
+	
+	local tangina = Instance.new("Frame")
+	tangina.Size = UDim2.new(0, 100, 0, 20) --
+	tangina.Position = UDim2.new(1, -102, 0, 2)
+	tangina.BackgroundColor3 = Color3.fromRGB(60,60,60)
+	tangina.BorderColor3 = Color3.new(0, 0, 0)
+	tangina.BorderSizePixel = 0
+	tangina.Active = true
+	tangina.BackgroundTransparency = 0 
+	tangina.Parent = textboxholder
+	
+	local line = Instance.new("Frame")
+	line.Size = UDim2.new(1, 0, 0, 1)
+	line.Position = UDim2.new(0, 0, 1, -1)
+	line.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+	line.BorderColor3 = Color3.new(0, 0, 0)
+	line.BorderSizePixel = 0
+	line.Active = true
+	line.BackgroundTransparency = 0 
+	line.Parent = tangina
+	
+	local textbox = Instance.new("TextBox")
+	textbox.Size = UDim2.new(0, 100, 0, 20) -- Adjusted size
+	textbox.Position = UDim2.new(1, -102, 0, 2)
+	textbox.BorderColor3 = Color3.new(0, 0, 0)
+	textbox.BorderSizePixel = 0
+	textbox.Text = ""
+	textbox.BackgroundTransparency = 1
+	textbox.TextColor3 = Color3.new(255, 255, 255)
+	textbox.Parent = textboxholder
+	textbox.ClipsDescendants = true
+	
+	textbox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            callback(textbox.Text)
+        end
+    end)
+    return textbox
+end
+
+    return UILibrary
+end
