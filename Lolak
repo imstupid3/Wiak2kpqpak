@@ -1,0 +1,163 @@
+local Players = game:GetService("Players")
+
+local Players = game:GetService("Players")
+
+local ui = {}
+
+function ui:gui(name)
+    local gui = Instance.new("ScreenGui")
+    gui.Parent = Players.LocalPlayer.PlayerGui
+    gui.ResetOnSpawn = false
+
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 150, 0, 200)
+    Frame.Position = UDim2.new(0, 0, 0.2, 0)
+    Frame.BackgroundColor3 = Color3.fromRGB(46, 46, 46)
+    Frame.BorderColor3 = Color3.new(0, 0, 0)
+    Frame.BorderSizePixel = 1
+    Frame.Active = true
+    Frame.Parent = gui
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = Frame
+
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Size = UDim2.new(1, 0, 0, 30)
+    TextLabel.Position = UDim2.new(0, 0, 0, 0)
+    TextLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+    TextLabel.BorderSizePixel = 1
+    TextLabel.Text = name or "no name"
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.TextColor3 = Color3.new(1, 1, 1) 
+    TextLabel.Font = Enum.Font.GothamBold
+    TextLabel.TextSize = 20
+    TextLabel.Parent = Frame
+
+    local sf = Instance.new("ScrollingFrame")
+    sf.Size = UDim2.new(1, 0, 1, -30)
+    sf.Position = UDim2.new(0, 0, 0, 30)
+    sf.BackgroundTransparency = 1
+    sf.ScrollBarThickness = 0
+    sf.ScrollingEnabled = false
+    sf.Parent = Frame
+
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 1)
+    UIListLayout.Parent = sf
+
+    return gui
+end
+
+local function textbox(name, callback)
+local textbox = Instance.new("Frame")
+textbox.Size = UDim2.new(1, 0, 0, 32)
+textbox.Position = UDim2.new(0, 0, 0, 1)
+textbox.BackgroundColor3 = Color3.new(1, 1, 1)
+textbox.BorderColor3 = Color3.new(0, 0, 0)
+textbox.BorderSizePixel = 1
+textbox.Active = true
+textbox.BackgroundTransparency = 1
+textbox.Parent = sf
+
+local uis = Instance.new("UIStroke")
+uis.Color = Color3.new(0, 0, 0)
+uis.Thickness = 1
+uis.Parent = textbox 
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 1, 0)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.new(0, 0, 0)
+title.BorderColor3 = Color3.new(0, 0, 0)
+title.BorderSizePixel = 1
+title.Text = name or "no name"
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.Parent = textbox
+title.TextSize=16
+title.TextXAlignment = Enum.TextXAlignment.Left 
+
+local pad = Instance.new("UIPadding", title)
+pad.PaddingLeft = UDim.new(0, 8)
+
+local mainbox = Instance.new("TextBox")
+mainbox.Size = UDim2.new(0, 44, 0, 26)
+mainbox.Position = UDim2.new(0, 100, 0, 3)
+mainbox.BackgroundColor3 = Color3.fromRGB(60,60,60)
+mainbox.BorderColor3 = Color3.new(0, 0, 0)
+mainbox.BorderSizePixel = 1
+mainbox.Text = ""
+mainbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+mainbox.BackgroundTransparency = 0
+mainbox.Font = Enum.Font.Code
+mainbox.TextSize = 15
+mainbox.Parent = textbox
+UICorner:Clone().Parent = mainbox
+
+mainbox.FocusLost:Connect(function(enterPressed)
+        if enterPressed and callback then
+            callback(mainbox.Text)
+        end
+    end)
+
+    return textbox
+end
+local function button(name, callback)
+local toggle = Instance.new("Frame")
+toggle.Size = UDim2.new(1, 0, 0, 32)
+toggle.Position = UDim2.new(0, 0, 0, 1)
+toggle.BackgroundColor3 = Color3.new(1, 1, 1)
+toggle.BorderColor3 = Color3.new(0, 0, 0)
+toggle.BorderSizePixel = 0
+toggle.Active = true
+toggle.BackgroundTransparency = 1
+toggle.Parent = sf
+uis:Clone().Parent = toggle
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 1, 0)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.new(0, 0, 0)
+title.BorderColor3 = Color3.new(0, 0, 0)
+title.BorderSizePixel = 1
+title.Text = name or "no name"
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.Parent = toggle
+title.TextSize=16
+title.TextXAlignment = Enum.TextXAlignment.Left 
+
+local maintoggle = Instance.new("TextButton")
+maintoggle.Size = UDim2.new(0, 26, 0, 26)
+maintoggle.Position = UDim2.new(0, 114, 0, 3)
+maintoggle.BackgroundColor3 = Color3.new(0, 0, 0)
+maintoggle.BorderColor3 = Color3.new(0, 0, 0)
+maintoggle.BorderSizePixel = 1
+maintoggle.Text = ""
+maintoggle.BackgroundTransparency = 0 
+maintoggle.TextColor3 = Color3.new(255, 255, 255)
+maintoggle.Parent = toggle
+UICorner:Clone().Parent= maintoggle
+
+local isActive = false
+
+    maintoggle.MouseButton1Click:Connect(function()
+        isActive = not isActive
+        if isActive then
+            maintoggle.BackgroundColor3 = Color3.new(0, 1, 0)
+        else
+            maintoggle.BackgroundColor3 = Color3.new(1, 0, 0)
+        end
+
+        if callback then
+            callback(isActive)
+        end
+    end)
+
+    return toggle
+end
