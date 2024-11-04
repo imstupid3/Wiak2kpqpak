@@ -46,57 +46,43 @@ function ui:gui(name)
     UIListLayout.Padding = UDim.new(0, 1)
     UIListLayout.Parent = sf
 
-    return gui
+    return gui, sf
 end
 
-local function textbox(name, callback)
-local textbox = Instance.new("Frame")
-textbox.Size = UDim2.new(1, 0, 0, 32)
-textbox.Position = UDim2.new(0, 0, 0, 1)
-textbox.BackgroundColor3 = Color3.new(1, 1, 1)
-textbox.BorderColor3 = Color3.new(0, 0, 0)
-textbox.BorderSizePixel = 1
-textbox.Active = true
-textbox.BackgroundTransparency = 1
-textbox.Parent = sf
+local function textbox(sf, name, callback)
+    local textbox = Instance.new("Frame")
+    textbox.Size = UDim2.new(1, 0, 0, 32)
+    textbox.BackgroundTransparency = 1
+    textbox.Parent = sf
 
-local uis = Instance.new("UIStroke")
-uis.Color = Color3.new(0, 0, 0)
-uis.Thickness = 1
-uis.Parent = textbox 
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 1, 0)
+    title.Text = name or "no name"
+    title.BackgroundTransparency = 1
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 16
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Parent = textbox
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 1, 0)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.BackgroundColor3 = Color3.new(0, 0, 0)
-title.BorderColor3 = Color3.new(0, 0, 0)
-title.BorderSizePixel = 1
-title.Text = name or "no name"
-title.BackgroundTransparency = 1
-title.TextColor3 = Color3.new(255, 255, 255)
-title.Font = Enum.Font.GothamBold
-title.Parent = textbox
-title.TextSize=16
-title.TextXAlignment = Enum.TextXAlignment.Left 
+    local pad = Instance.new("UIPadding", title)
+    pad.PaddingLeft = UDim.new(0, 8)
 
-local pad = Instance.new("UIPadding", title)
-pad.PaddingLeft = UDim.new(0, 8)
+    local mainbox = Instance.new("TextBox")
+    mainbox.Size = UDim2.new(0, 44, 0, 26)
+    mainbox.Position = UDim2.new(0, 100, 0, 3)
+    mainbox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    mainbox.Text = ""
+    mainbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    mainbox.Font = Enum.Font.Code
+    mainbox.TextSize = 15
+    mainbox.Parent = textbox
 
-local mainbox = Instance.new("TextBox")
-mainbox.Size = UDim2.new(0, 44, 0, 26)
-mainbox.Position = UDim2.new(0, 100, 0, 3)
-mainbox.BackgroundColor3 = Color3.fromRGB(60,60,60)
-mainbox.BorderColor3 = Color3.new(0, 0, 0)
-mainbox.BorderSizePixel = 1
-mainbox.Text = ""
-mainbox.TextColor3 = Color3.fromRGB(255, 255, 255)
-mainbox.BackgroundTransparency = 0
-mainbox.Font = Enum.Font.Code
-mainbox.TextSize = 15
-mainbox.Parent = textbox
-UICorner:Clone().Parent = mainbox
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = mainbox
 
-mainbox.FocusLost:Connect(function(enterPressed)
+    mainbox.FocusLost:Connect(function(enterPressed)
         if enterPressed and callback then
             callback(mainbox.Text)
         end
@@ -104,53 +90,41 @@ mainbox.FocusLost:Connect(function(enterPressed)
 
     return textbox
 end
-local function toggle(name, callback)
-local toggle = Instance.new("Frame")
-toggle.Size = UDim2.new(1, 0, 0, 32)
-toggle.Position = UDim2.new(0, 0, 0, 1)
-toggle.BackgroundColor3 = Color3.new(1, 1, 1)
-toggle.BorderColor3 = Color3.new(0, 0, 0)
-toggle.BorderSizePixel = 0
-toggle.Active = true
-toggle.BackgroundTransparency = 1
-toggle.Parent = sf
-uis:Clone().Parent = toggle
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 1, 0)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.BackgroundColor3 = Color3.new(0, 0, 0)
-title.BorderColor3 = Color3.new(0, 0, 0)
-title.BorderSizePixel = 1
-title.Text = name or "no name"
-title.BackgroundTransparency = 1
-title.TextColor3 = Color3.new(255, 255, 255)
-title.Font = Enum.Font.GothamBold
-title.Parent = toggle
-title.TextSize=16
-title.TextXAlignment = Enum.TextXAlignment.Left 
+local function toggle(sf, name, callback)
+    local toggle = Instance.new("Frame")
+    toggle.Size = UDim2.new(1, 0, 0, 32)
+    toggle.BackgroundTransparency = 1
+    toggle.Parent = sf
 
-local maintoggle = Instance.new("TextButton")
-maintoggle.Size = UDim2.new(0, 26, 0, 26)
-maintoggle.Position = UDim2.new(0, 114, 0, 3)
-maintoggle.BackgroundColor3 = Color3.new(0, 0, 0)
-maintoggle.BorderColor3 = Color3.new(0, 0, 0)
-maintoggle.BorderSizePixel = 1
-maintoggle.Text = ""
-maintoggle.BackgroundTransparency = 0 
-maintoggle.TextColor3 = Color3.new(255, 255, 255)
-maintoggle.Parent = toggle
-UICorner:Clone().Parent= maintoggle
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 1, 0)
+    title.Text = name or "no name"
+    title.BackgroundTransparency = 1
+    title.TextColor3 = Color3.new(255, 255, 255)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 16
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Parent = toggle
+    pad:Clone().Parent = title
+    
+    local maintoggle = Instance.new("TextButton")
+    maintoggle.Size = UDim2.new(0, 26, 0, 26)
+    maintoggle.Position = UDim2.new(0, 114, 0, 3)
+    maintoggle.BackgroundColor3 = Color3.fromRGB(240, 128, 128)
+    maintoggle.Text = ""
+    maintoggle.TextColor3 = Color3.new(255, 255, 255)
+    maintoggle.Parent = toggle
 
-local isActive = false
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 2)
+    UICorner.Parent = maintoggle
+
+    local isActive = false
 
     maintoggle.MouseButton1Click:Connect(function()
         isActive = not isActive
-        if isActive then
-            maintoggle.BackgroundColor3 = Color3.new(0, 1, 0)
-        else
-            maintoggle.BackgroundColor3 = Color3.new(1, 0, 0)
-        end
+        maintoggle.BackgroundColor3 = isActive and Color3.fromRGB(152, 255, 152) or Color3.fromRGB(240, 128, 128)
 
         if callback then
             callback(isActive)
