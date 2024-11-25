@@ -324,7 +324,7 @@ function UI:MakeWindow(title)
 	
 	    local mainbox = Instance.new("TextBox")
 	    mainbox.Size = UDim2.new(0, 42, 0, 24)
-	    mainbox.Position = UDim2.new(1, -45 0, 3)
+	    mainbox.Position = UDim2.new(1, -45, 0, 3)
 	    mainbox.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 	    mainbox.PlaceholderColor3 = Color3.fromRGB(112, 101, 120)
         mainbox.PlaceholderText = "text here"
