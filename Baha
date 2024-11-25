@@ -1,0 +1,353 @@
+local UI = {}
+local batWindowCount = 0
+local batSizes = {}
+local batWindows = {}
+local batDestroyed
+
+if game.CoreGui:FindFirstChild('BatUiLib') then
+    game.CoreGui:FindFirstChild('BatUiLib'):Destroy()
+    batDestroyed = true
+end
+
+function Lerp(a, b, c)
+    return a + ((b - a) * c)
+end
+
+local players = game:GetService('Players')
+local player = players.LocalPlayer
+local mouse = player:GetMouse()
+local run = game:GetService('RunService')
+local UIS = game:GetService("UserInputService")
+
+local function dragify(main)
+	local dragToggle = nil
+	local dragSpeed = 0.15
+	local dragInput = nil
+	local dragStart = nil
+	local dragPos = nil
+	local startPos = nil
+
+	-- Update function for drag position
+	local function updateInput(input)
+		local Delta = input.Position - dragStart
+		local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+		game:GetService("TweenService"):Create(main, TweenInfo.new(0.15), {Position = Position}):Play()
+	end
+
+	-- Input began event
+	main.InputBegan:Connect(function(input)
+		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+			dragToggle = true
+			dragStart = input.Position
+			startPos = main.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragToggle = false
+				end
+			end)
+		end
+	end)
+
+	-- Input changed event
+	main.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+
+	-- Global input changed event
+	UIS.InputChanged:Connect(function(input)
+		if input == dragInput and dragToggle then
+			updateInput(input)
+		end
+	end)
+end
+
+local function protectGui(obj)
+    if batDestroyed then
+        obj.Parent = game.CoreGui
+        return
+    end
+    if syn and syn.protect_gui then
+        syn.protect_gui(obj)
+        obj.Parent = game.CoreGui
+    elseif PROTOSMASHER_LOADED then
+        obj.Parent = get_hidden_gui()
+    else
+        obj.Parent = game.CoreGui
+    end
+end
+
+local BatUiLib = Instance.new("ScreenGui")
+BatUiLib.Name = "BatUiLib"
+protectGui(BatUiLib)
+
+local batXOffset = 20
+local uis = game:GetService("UserInputService")
+local keybindConnection
+
+function UI:Destroy()
+    BatUiLib:Destroy()
+    if keybindConnection then
+        keybindConnection:Disconnect()
+    end
+end
+
+function UI:Hide()
+    BatUiLib.Enabled = not BatUiLib.Enabled
+end
+
+function UI:Keybind(key)
+    if keybindConnection then keybindConnection:Disconnect() end
+    keybindConnection = uis.InputBegan:Connect(function(input, gp)
+        if not gp and input.KeyCode == Enum.KeyCode[key] then
+            BatUiLib.Enabled = not BatUiLib.Enabled
+        end
+    end)
+end
+
+function UI:MakeWindow(title)
+    batWindowCount = batWindowCount + 1
+    local winCount = batWindowCount
+    local zindex = winCount * 7
+    local main = Instance.new("Frame")
+
+    main.Name = "main"
+    main.Parent = BatUiLib
+    main.BackgroundColor3 = Color3.fromRGB(18, 18, 22)  -- Dark purple/gray background
+    main.BorderColor3 = Color3.fromRGB(24, 24, 32)      -- Darker border
+    main.Position = UDim2.new(0, batXOffset, 0, 20)
+    main.Size = UDim2.new(0, 160, 0, 33)
+    main.ZIndex = 4 + zindex
+    main.Active = true
+    dragify(main)
+    
+    local uicorner = Instance.new("UICorner")
+    uicorner.CornerRadius = UDim.new(0, 2)
+    uicorner.Parent = main
+    
+    batXOffset = batXOffset + 190
+
+    local topbar = Instance.new("Frame")
+    topbar.Parent = main
+    topbar.BackgroundColor3 = Color3.fromRGB(30, 30, 40)  -- Header color
+    topbar.BorderColor3 = Color3.fromRGB(24, 24, 32)
+    topbar.Position = UDim2.new(0, 0, 0, 0)
+    topbar.Size = UDim2.new(0, 160, 0, 30)
+    topbar.ZIndex = 5 + zindex
+    uicorner:Clone().Parent = topbar
+    
+    local mainTitle = Instance.new("TextLabel")
+    mainTitle.Parent = topbar
+    mainTitle.BackgroundTransparency = 1
+    mainTitle.Position = UDim2.new(0, 0, -0.0020698905, 0)
+    mainTitle.Size = UDim2.new(0, 160, 0, 30)
+    mainTitle.ZIndex = 6 + zindex
+    mainTitle.Font = Enum.Font.GothamBold
+    mainTitle.Text = title or "BAT UI"
+    mainTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+    mainTitle.TextSize = 13
+
+    local mainToggle = Instance.new("TextButton")
+    local body = Instance.new("Frame")
+    mainToggle.Parent = topbar
+    mainToggle.BackgroundTransparency = 1
+    mainToggle.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    mainToggle.BorderColor3 = Color3.fromRGB(24, 24, 32)
+    mainToggle.Position = UDim2.new(1, -30, 0, 0)
+    mainToggle.Size = UDim2.new(0, 30, 0, 30)
+    mainToggle.ZIndex = 7 + zindex
+    mainToggle.Font = Enum.Font.SourceSansLight
+    mainToggle.Text = "-"
+    mainToggle.TextColor3 = Color3.fromRGB(200, 200, 200)
+    mainToggle.TextSize = 20
+    mainToggle.MouseButton1Up:connect(function()
+        body.Visible = not body.Visible
+        if body.Visible then
+            mainToggle.Text = "-"
+        else
+            mainToggle.Text = "+"
+        end
+    end)
+
+    body.Name = "bruh"
+    body.Parent = main
+    body.BackgroundColor3 = Color3.fromRGB(24, 24, 32) -- Inner window content background
+    body.BorderColor3 = Color3.fromRGB(24, 24, 32)
+    body.Position = UDim2.new(0, 0, 0, 0)
+    body.Size = UDim2.new(0, 160, 0, 30)
+    body.ZIndex = 1 + zindex
+    uicorner:Clone().Parent = body
+    
+    local elementlist = Instance.new("UIListLayout")
+    elementlist.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    elementlist.SortOrder = Enum.SortOrder.LayoutOrder
+    elementlist.Padding = UDim.new(0, 1)
+    elementlist.Parent = body 
+    
+    local blank = Instance.new("Frame")
+    blank.Size = UDim2.new(0, 160, 0, 30)
+    blank.Position = UDim2.new(0, 0, 0, 0)
+    blank.BackgroundColor3 = Color3.new(1, 1, 1)
+    blank.BorderColor3 = Color3.new(0, 0, 0)
+    blank.BorderSizePixel = 1
+    blank.Active = true
+    blank.BackgroundTransparency = 1
+    blank.Parent = body
+
+    local functions = {}
+    functions.__index = functions
+    functions.ui = main
+
+    batSizes[winCount] = 31
+
+    function functions:Destroy()
+        self.ui:Destroy()
+    end
+
+    function functions:MakeButton(name, callback)
+        local name = name or "Button"
+        local callback = callback or function() end
+
+        batSizes[winCount] = batSizes[winCount] + 31
+        body.Size = UDim2.new(0, 160, 0, batSizes[winCount] + 5)
+        
+        local buttonholder = Instance.new("Frame")
+	    buttonholder.Size = UDim2.new(1, 0, 0, 30)
+    	buttonholder.ZIndex = 2 + zindex
+        buttonholder.Parent = body
+	    buttonholder.BackgroundTransparency = 1
+
+        local button = Instance.new("TextButton")
+        button.Name = "Button"
+        button.Parent = buttonholder
+        button.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+        button.BorderColor3 = Color3.fromRGB(80, 80, 90)
+        button.Size = UDim2.new(1, -6, 1, -6)
+        button.Position = UDim2.new(0, 3, 0, 3)
+        button.ZIndex = 2 + zindex
+        button.Font = Enum.Font.GothamBold
+        button.TextColor3 = Color3.fromRGB(200, 200, 200)
+        button.TextSize = 12
+        button.Text = name
+        button.TextXAlignment = Enum.TextXAlignment.Left
+        local pad = Instance.new("UIPadding", button)
+	    pad.PaddingLeft = UDim.new(0, 8)
+        local uicorner = Instance.new("UICorner")
+	    uicorner.CornerRadius = UDim.new(0, 3)
+	    uicorner.Parent = button
+        button.MouseButton1Click:Connect(callback)
+    end
+    
+        function functions:MakeToggle(text, on, callback)
+        local callback = callback or function() end
+
+        batSizes[winCount] = batSizes[winCount] + 31
+        body.Size = UDim2.new(0, 160, 0, batSizes[winCount] + 5)
+        
+        local toggleholder = Instance.new("Frame")
+	    toggleholder.Size = UDim2.new(1, 0, 0, 30)
+    	toggleholder.ZIndex = 2 + zindex
+        toggleholder.Parent = body
+	    toggleholder.BackgroundTransparency = 1              
+        
+        local toggletitle = Instance.new("TextLabel")
+        toggletitle.Parent = toggleholder
+        toggletitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        toggletitle.BackgroundTransparency = 1
+        toggletitle.Size = UDim2.new(1, 0, 1, 0)
+        toggletitle.Font = Enum.Font.GothamBold
+        toggletitle.Text = text or "Toggle"
+        toggletitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+        toggletitle.TextSize = 13
+        toggletitle.TextXAlignment = Enum.TextXAlignment.Left
+        toggletitle.ZIndex = 2 + zindex
+        
+        local toggle = Instance.new("ImageButton")
+		toggle.Parent = toggleholder
+		toggle.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+		toggle.BorderColor3 = Color3.fromRGB(113, 128, 147)
+		toggle.Position = UDim2.new(1, -28, 0, 3)
+		toggle.Size = UDim2.new(0, 24, 0, 24)
+		toggle.ZIndex = 2 + zindex
+		toggle.Image = ""
+		toggle.ImageTransparency = 0
+		toggle.ScaleType = Enum.ScaleType.Crop
+		
+		local isActive = false
+		
+		toggle.MouseButton1Click:Connect(function()
+		    isActive = not isActive
+		    toggle.Image = isActive and "" or "rbxassetid://110718870105693"
+		    if callback then
+		        callback(isActive)
+		    end
+		end)
+          
+        local pad = Instance.new("UIPadding", toggletitle)
+	    pad.PaddingLeft = UDim.new(0, 12)
+        local uicorner = Instance.new("UICorner")
+	    uicorner.CornerRadius = UDim.new(0, 4)
+	    uicorner.Parent = toggle
+	    local uis1 = Instance.new("UIStroke")
+		uis1.Color = Color3.fromRGB(30, 33, 33)
+		uis1.ApplyStrokeMode = Enum.ApplyStrokeMode.Border 
+		uis1.Thickness = 1
+		uis1.Parent = toggle
+    end
+    
+    function functions:MakeTextBox(text, callback)
+        local callback = callback or function() end
+
+        batSizes[winCount] = batSizes[winCount] + 31
+        body.Size = UDim2.new(0, 160, 0, batSizes[winCount] + 5)
+        
+        local textbox = Instance.new("Frame")
+	    textbox.Size = UDim2.new(1, 0, 0, 30)
+    	textbox.ZIndex = 2 + zindex
+	    textbox.BackgroundTransparency = 1
+	    textbox.Parent = body
+	
+	    local title = Instance.new("TextLabel")
+	    title.Size = UDim2.new(1, 0, 1, 0)
+	    title.Text = text or "Box"
+	    title.BackgroundTransparency = 1
+	    title.TextColor3 = Color3.fromRGB(200, 200, 200)
+	    title.Font = Enum.Font.GothamBold
+	    title.TextSize = 13
+	    title.ZIndex = 2 + zindex
+	    title.TextXAlignment = Enum.TextXAlignment.Left
+	    title.Parent = textbox
+	
+	    local pad = Instance.new("UIPadding", title)
+	    pad.PaddingLeft = UDim.new(0, 12)
+	
+	    local mainbox = Instance.new("TextBox")
+	    mainbox.Size = UDim2.new(0, 42, 0, 24)
+	    mainbox.Position = UDim2.new(1, -45 0, 3)
+	    mainbox.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+	    mainbox.PlaceholderColor3 = Color3.fromRGB(112, 101, 120)
+        mainbox.PlaceholderText = "text here"
+	    mainbox.Text = ""
+	    mainbox.ZIndex = 2 + zindex
+	    mainbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+	    mainbox.Font = Enum.Font.Gotham
+	    mainbox.TextSize = 12
+	    mainbox.Parent = textbox
+	
+	    local UICorner = Instance.new("UICorner")
+	    UICorner.CornerRadius = UDim.new(0, 4)
+	    UICorner.Parent = mainbox
+	
+	   mainbox:GetPropertyChangedSignal('Text'):connect(function()
+            callback(mainbox.Text, false)
+        end)
+        mainbox.FocusLost:Connect(function()
+            callback(mainbox.Text, true)
+        end)
+        end
+        
+    return functions
+end
+
+return UI
