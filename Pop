@@ -1,5 +1,7 @@
+local destroyed
+
 local function protectGui(obj)
-    if batDestroyed then
+    if destroyed then
         obj.Parent = game.CoreGui
         return
     end
@@ -15,7 +17,7 @@ end
 
 local TweenService = game:GetService("TweenService")
 
-function notify(args)
+local function notify(args)
     if game.CoreGui:FindFirstChild('Notification') then
         game.CoreGui:FindFirstChild('Notification'):Destroy()
     end
@@ -97,9 +99,9 @@ function notify(args)
     task.delay(args.Time, function()
         if ScreenGui and ScreenGui.Parent then
             local tweenInfoDelete = TweenInfo.new(
-                0.5, -- Time (in seconds)
+                0.5,
                 Enum.EasingStyle.Sine,
-                Enum.EasingDirection.In 
+                Enum.EasingDirection.In
             )
             local tweenGoalDelete = {Position = UDim2.new(1, -160, 0.6, 0)}
             local tweenDelete = TweenService:Create(Frame, tweenInfoDelete, tweenGoalDelete)
@@ -111,3 +113,5 @@ function notify(args)
         end
     end)
 end
+
+return notify
