@@ -50,7 +50,7 @@ local function notify(args)
     Frame.Parent = ScreenGui
     Frame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     Frame.Position = UDim2.new(1, 0, 0.7, 0)
-    Frame.Size = UDim2.new(0, 170, 0, 68)
+    Frame.Size = UDim2.new(0, 170, 0, 65)
 
     UICorner.CornerRadius = UDim.new(0, 3)
     UICorner.Parent = Frame
