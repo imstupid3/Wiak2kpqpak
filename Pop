@@ -66,7 +66,7 @@ local function notify(args)
     title.Parent = Frame
     title.BackgroundTransparency = 1
     title.Position = UDim2.new(0.379, 0, 0.077, 0)
-    title.Size = UDim2.new(0, 100, 0, 23)
+    title.Size = UDim2.new(0, 92, 0, 23)
     title.Text = args.Name or "No Content"
     title.Font = Enum.Font.GothamSemibold
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -80,7 +80,7 @@ local function notify(args)
     description.Parent = Frame
     description.BackgroundTransparency = 1
     description.Position = UDim2.new(0.379, 0, 0.405, 0)
-    description.Size = UDim2.new(0, 100, 0, 30)
+    description.Size = UDim2.new(0, 92, 0, 30)
     description.Text = args.Description or "No Content"
     description.Font = Enum.Font.SourceSans
     description.TextColor3 = Color3.fromRGB(111, 111, 111)
