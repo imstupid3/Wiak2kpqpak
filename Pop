@@ -54,7 +54,7 @@ local function notify(args)
 	Frame.Size = UDim2.new(0, 216, 0, 66)
 	Frame.AutomaticSize = Enum.AutomaticSize.Y
 	
-	UICorner.CornerRadius = UDim.new(0, 5)
+	UICorner.CornerRadius = UDim.new(0, 3)
 	UICorner.Parent = Frame
 	
 	local uip = Instance.new("UIPadding")
