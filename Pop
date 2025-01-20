@@ -17,14 +17,15 @@ local TweenService = game:GetService("TweenService")
 
 local function notify(args)
     args.Name = args.Name or "No Content"
-    args.Description = args.Description or "HA HA HA"
+    args.Description = args.Description or "This is a notification."
+    args.Icon = args.Icon or "rbxassetid://11745872910"
     args.Time = args.Time or 5
 
     if game.CoreGui:FindFirstChild('Notification') then
         local frame = game.CoreGui.Notification:FindFirstChildWhichIsA('Frame')
         if frame then
             local tweenInfoDelete = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
-            local tweenGoalDelete = {Position = UDim2.new(1, -170, 0.67, 0)}
+            local tweenGoalDelete = {Position = UDim2.new(1, -216, 0.67, 0)}
             local tweenDelete = TweenService:Create(frame, tweenInfoDelete, tweenGoalDelete)
 
             tweenDelete:Play()
@@ -47,57 +48,69 @@ local function notify(args)
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     protectGui(ScreenGui)
 
-    Frame.Parent = ScreenGui
-    Frame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    Frame.Position = UDim2.new(1, 0, 0.7, 0)
-    Frame.Size = UDim2.new(0, 170, 0, 65)
+	Frame.Parent = ScreenGui
+	Frame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	Frame.Position = UDim2.new(1, 0, 0.7, 0)
+	Frame.Size = UDim2.new(0, 216, 0, 66)
+	Frame.AutomaticSize = Enum.AutomaticSize.Y
+	
+	UICorner.CornerRadius = UDim.new(0, 5)
+	UICorner.Parent = Frame
+	
+	local uip = Instance.new("UIPadding")
+	uip.PaddingTop = UDim.new(0, 12)
+	uip.PaddingBottom = UDim.new(0, 12)
+	uip.PaddingLeft = UDim.new(0, 12)
+	uip.PaddingRight = UDim.new(0, 12)
+	uip.Parent = Frame
+	
+	icon.Name = "icon"
+	icon.Parent = Frame
+	icon.BackgroundTransparency = 1
+	icon.Position = UDim2.new(0, 0, 0, 0)
+	icon.Size = UDim2.new(0, 30, 0, 30)
+	icon.Image = args.Icon
+	
+	title.Name = "title"
+	title.Parent = Frame
+	title.BackgroundTransparency = 1
+	title.Position = UDim2.new(0, 37, 0, 5)
+	title.Size = UDim2.new(1, -30, 0, 20)
+	title.Text = args.Name
+	title.Font = Enum.Font.GothamBold
+	title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	title.TextSize = 15
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	
+	UIPadding.PaddingLeft = UDim.new(0, 3)
+	UIPadding.Parent = title
+	
+	description.Name = "description"
+	description.Parent = Frame
+	description.BackgroundTransparency = 1
+	description.Position = UDim2.new(0, 0, 0, 35)
+	description.Size = UDim2.new(1, 0, 0, 0)
+	description.Text = args.Description
+	description.Font = Enum.Font.GothamSemibold
+	description.TextColor3 = Color3.fromRGB(150,150,150)
+	description.TextSize = 13
+	description.AutomaticSize = Enum.AutomaticSize.Y
+	description.TextWrapped = true
+	description.TextXAlignment = Enum.TextXAlignment.Left
+	description.TextYAlignment = Enum.TextYAlignment.Top
+	
+	local descriptionPadding = UIPadding:Clone()
+	descriptionPadding.Parent = description
 
-    UICorner.CornerRadius = UDim.new(0, 3)
-    UICorner.Parent = Frame
-
-    icon.Name = "icon"
-    icon.Parent = Frame
-    icon.BackgroundTransparency = 1
-    icon.Position = UDim2.new(0, 5, 0, 5)
-    icon.Size = UDim2.new(0, 50, 0, 50)
-    icon.Image = "rbxassetid://11745872910"
-
-    title.Name = "title"
-    title.Parent = Frame
-    title.BackgroundTransparency = 1
-    title.Position = UDim2.new(0.379, 0, 0.077, 0)
-    title.Size = UDim2.new(0, 92, 0, 23)
-    title.Text = args.Name or "No Content"
-    title.Font = Enum.Font.GothamSemibold
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.TextSize = 14
-    title.TextXAlignment = Enum.TextXAlignment.Left
-
-    UIPadding.PaddingLeft = UDim.new(0, 7)
-    UIPadding.Parent = title
-
-    description.Name = "description"
-    description.Parent = Frame
-    description.BackgroundTransparency = 1
-    description.Position = UDim2.new(0.379, 0, 0.405, 0)
-    description.Size = UDim2.new(0, 92, 0, 30)
-    description.Text = args.Description or "No Content"
-    description.Font = Enum.Font.SourceSans
-    description.TextColor3 = Color3.fromRGB(111, 111, 111)
-    description.TextSize = 12.5
-    description.TextXAlignment = Enum.TextXAlignment.Left
-    description.TextYAlignment = Enum.TextYAlignment.Top
-    UIPadding:Clone().Parent = description
-
-    local tweenInfoAppear = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-    local tweenGoalAppear = {Position = UDim2.new(1, -170, 0.7, 0)}
+    local tweenInfoAppear = TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local tweenGoalAppear = {Position = UDim2.new(1, -216, 0.7, 0)}
     local tweenAppear = TweenService:Create(Frame, tweenInfoAppear, tweenGoalAppear)
     tweenAppear:Play()
 
     task.delay(args.Time, function()
         if ScreenGui and ScreenGui.Parent then
             local tweenInfoDelete = TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
-            local tweenGoalDelete = {Position = UDim2.new(1, -170, 0.67, 0)}
+            local tweenGoalDelete = {Position = UDim2.new(1, -216, 0.67, 0)}
             local tweenDelete = TweenService:Create(Frame, tweenInfoDelete, tweenGoalDelete)
 
             tweenDelete:Play()
