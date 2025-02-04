@@ -1,0 +1,130 @@
+local TweenService = game:GetService("TweenService")
+local function protectGui(obj)
+    if syn and syn.protect_gui then
+        syn.protect_gui(obj)
+    elseif PROTOSMASHER_LOADED then
+        obj.Parent = get_hidden_gui()
+    else
+        obj.Parent = game.CoreGui
+    end
+end
+
+function notify(args)
+    task.delay(0.6, function()
+        args.Name = args.Name or "No Content"
+        args.Icon = args.Icon or "rbxassetid://11401835376"
+        args.Time = args.Time or 5
+
+        local existingNotification = game.CoreGui:FindFirstChild("redditNotification")
+        if existingNotification then
+            local frame = existingNotification:FindFirstChildWhichIsA("Frame")
+            if frame then
+                local tweenInfoDelete = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
+                local tweenGoalDelete = {Position = UDim2.new(0.5, 0, 1.6, 0)}
+                local tweenDelete = TweenService:Create(frame, tweenInfoDelete, tweenGoalDelete)
+
+                tweenDelete:Play()
+                tweenDelete.Completed:Connect(function()
+                    existingNotification:Destroy()
+                end)
+            end
+        end
+
+
+        local gui = Instance.new("ScreenGui")
+        gui.Name = "redditNotification"
+        protectGui(gui)
+
+		local main = Instance.new("Frame")
+		main.Size = UDim2.new(0, 65, 0, 40)
+		main.AnchorPoint = Vector2.new(0.5, 0.5)
+		main.Position = UDim2.new(0.5, 0, 1.6, 0)
+		main.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+		main.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		main.AutomaticSize = Enum.AutomaticSize.X
+		main.BorderSizePixel = 1
+		main.Active = true
+		main.BackgroundTransparency = 0
+		main.Parent = gui
+		
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = Color3.fromRGB(255, 50, 50)
+		stroke.Thickness = 2
+		stroke.Transparency = 0.2
+		stroke.Color = Color3.fromRGB(255,255,255)
+		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		stroke.Parent = main
+		
+		local gradient = Instance.new("UIGradient")
+		gradient.Color = ColorSequence.new({
+		    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+		    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(255, 165, 0)),
+		    ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 0)),
+		    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)),
+		    ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 0, 255)),
+		    ColorSequenceKeypoint.new(0.83, Color3.fromRGB(75, 0, 130)),
+		    ColorSequenceKeypoint.new(1, Color3.fromRGB(148, 0, 211))
+		})
+		gradient.Parent = stroke
+		
+		task.spawn(function()
+		    while task.wait(0.02) do
+		        gradient.Rotation = (gradient.Rotation + 5) % 360
+		    end
+		end)
+		
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0, 3)
+		corner.Parent = main
+		
+		local border = Instance.new("UIPadding")
+		border.PaddingRight = UDim.new(0, 8)
+		border.Parent = main
+		
+		local icon = Instance.new("ImageLabel")
+		icon.Size = UDim2.new(0, 26, 0, 26)
+		icon.Position = UDim2.new(0, 6, 0, 7)
+		icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		icon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+		icon.Image = args.Icon
+		icon.ImageTransparency = 0
+		icon.ScaleType = Enum.ScaleType.Stretch
+		icon.BackgroundTransparency = 1
+		icon.Parent = main
+		
+		local title = Instance.new("TextLabel")
+		title.Size = UDim2.new(0, 30, 0, 30)
+		title.Position = UDim2.new(0, 40, 0, 5)
+		title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		title.BorderColor3 = Color3.fromRGB(255, 255, 255)
+		title.BorderSizePixel = 1
+		title.Text = args.Name
+		title.BackgroundTransparency = 1
+		title.TextXAlignment = Enum.TextXAlignment.Left
+		title.AutomaticSize = Enum.AutomaticSize.X
+		title.TextSize = 9
+		title.TextColor3 = Color3.fromRGB(255, 255, 255)
+		title.Font = Enum.Font.Legacy
+		title.Parent = main
+		
+		local tweenInfoAppear = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+        local tweenGoalAppear = {Position = UDim2.new(0.5, 0, 0.86, 0)}
+        local tweenAppear = TweenService:Create(main, tweenInfoAppear, tweenGoalAppear)
+        tweenAppear:Play()
+
+        task.delay(args.Time, function()
+            if gui and gui.Parent then
+                local tweenInfoDelete = TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
+                local tweenGoalDelete = {Position = UDim2.new(0.5, 0, 1.6, 0)}
+                local tweenDelete = TweenService:Create(main, tweenInfoDelete, tweenGoalDelete)
+
+                tweenDelete:Play()
+                tweenDelete.Completed:Connect(function()
+                    gui:Destroy()
+                end)
+            end
+        end)
+    end)
+end
+
+return notify
