@@ -15,7 +15,7 @@ function notify(args)
         args.Icon = args.Icon or "rbxassetid://11401835376"
         args.Time = args.Time or 5
 
-        local existingNotification = game.CoreGui:FindFirstChild("redditNotification")
+        local existingNotification = game.CoreGui:FindFirstChild("notify")
         if existingNotification then
             local frame = existingNotification:FindFirstChildWhichIsA("Frame")
             if frame then
@@ -32,7 +32,7 @@ function notify(args)
 
 
         local gui = Instance.new("ScreenGui")
-        gui.Name = "redditNotification"
+        gui.Name = "notify"
         protectGui(gui)
 
 		local main = Instance.new("Frame")
